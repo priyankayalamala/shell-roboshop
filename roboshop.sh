@@ -2,8 +2,8 @@
 
 AMI_ID="ami-09c813fb71547fc4f"
 SG_ID="sg-07c8acf3fa6b923fa" # replace with your SG ID
-ZONE_ID="Z0948150OFPSYTNVYZOY" # replace with your ID
-DOMAIN_NAME="daws86s.fun"
+ZONE_ID="Z05052331V4VEGNQW2KX2" # replace with your ID
+DOMAIN_NAME="daws86s.shop"
 
 for instance in $@ # mongodb redis mysql
 do
@@ -12,10 +12,10 @@ do
     # Get Private IP
     if [ $instance != "frontend" ]; then
         IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text)
-        RECORD_NAME="$instance.$DOMAIN_NAME" # mongodb.daws86s.fun
+        RECORD_NAME="$instance.$DOMAIN_NAME" # mongodb.daws86s.shop
     else
         IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
-        RECORD_NAME="$DOMAIN_NAME" # daws86s.fun
+        RECORD_NAME="$DOMAIN_NAME" # daws86s.shop
     fi
 
     echo "$instance: $IP"
