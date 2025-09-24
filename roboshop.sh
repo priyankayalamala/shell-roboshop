@@ -1,7 +1,7 @@
 #!/bin/bash
 
 AMI_ID="ami-09c813fb71547fc4f"
-SG_ID="sg-07c8acf3fa6b923fa" # replace with your SG ID
+SG_ID="sg-05d71202ec003d594" # replace with your SG ID
 ZONE_ID="Z05052331V4VEGNQW2KX2" # replace with your ID
 DOMAIN_NAME="daws86s.shop"
 
