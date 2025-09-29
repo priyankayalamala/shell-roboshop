@@ -8,6 +8,8 @@ N="\e[0m"
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
+SCRIPT_DIR=$PWD
+MONGODB_HOST=mongodb.daws86s.fun
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 
 mkdir -p $LOGS_FOLDER
@@ -27,21 +29,24 @@ VALIDATE(){ # functions receive inputs through args just like shell script args
     fi
 }
 
+dnf module disable nginx -y &>>$LOG_FILE
+dnf module enable nginx:1.24 -y &>>$LOG_FILE
+dnf install nginx -y &>>$LOG_FILE
+VALIDATE $? "Installing Nginx"
 
-cp mongo.repo /etc/yum.repos.d/mongo.repo
-VALIDATE $? "Adding Mongo repo"
+systemctl enable nginx  &>>$LOG_FILE
+systemctl start nginx 
+VALIDATE $? "Starting Nginx"
 
-dnf install mongodb-org -y &>>$LOG_FILE
-VALIDATE $? "Installing MongoDB"
+rm -rf /usr/share/nginx/html/* 
+curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip &>>$LOG_FILE
+cd /usr/share/nginx/html 
+unzip /tmp/frontend.zip &>>$LOG_FILE
+VALIDATE $? "Downloading frontend"
 
-systemctl enable mongod &>>$LOG_FILE
-VALIDATE $? "Enable MongoDB"
+rm -rf /etc/nginx/nginx.conf
+cp $SCRIPT_DIR/nginx.conf /etc/nginx/nginx.conf
+VALIDATE $? "Copying nginx.conf"
 
-systemctl start mongod 
-VALIDATE $? "Start MongoDB"
-
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
-VALIDATE $? "Allowing remote connections to MongoDB"
-
-systemctl restart mongod
-VALIDATE $? "Restarted MongoDB"
+systemctl restart nginx 
+VALIDATE $? "Restarting Nginx"
